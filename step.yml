@@ -1,18 +1,11 @@
-#
-# A couple of useful guides & docs:
-#
-# - Main Bitrise CLI docs: https://github.com/bitrise-io/bitrise/tree/master/_docs
-# - Step Development Guideline: https://github.com/bitrise-io/bitrise/blob/master/_docs/step-development-guideline.md
-# - Bitrise.yml format spec: https://github.com/bitrise-io/bitrise/blob/master/_docs/bitrise-yml-format-spec.md
-# - Bitrise docs: http://devcenter.bitrise.io/
-# - Bitrise CLI guides: http://devcenter.bitrise.io/bitrise-cli/
-
 title: |-
   bitrise-step-jira-set-release-version
 summary: |
   Create and Add a Jira release version
 description: |
   Use this step to create a Jira release in your project and add it to a bundle of tickets
+
+  ⚠️ Admin rights on jira board are required ⚠️
 website: https://github.com/Freebox-Apps/bitrise-step-jira-set-release-version
 source_code_url: https://github.com/Freebox-Apps/bitrise-step-jira-set-release-version
 support_url: https://github.com/Freebox-Apps/bitrise-step-jira-set-release-version
@@ -28,35 +21,48 @@ toolkit:
 inputs:
   - JIRA_DOMAIN:
     opts:
-      title: Jira company domain
+      title: Jira company DOMAIN
+      description:  e.g. `https://mycompany.atlassian.net`
       is_sensitive: true
       is_required: true
   - JIRA_USER:
     opts:
       title: Jira user name
+      description: User name on Jira (user's email).
       is_sensitive: true
       is_required: true
   - JIRA_TOKEN:
     opts:
       title: Jira token
+      description: |
+        API token generated on Jira at <https://id.atlassian.com/manage-profile/security/api-tokens>
+
+        NB: the user account on which the token is based needs admin rights to be able to create a new version
       is_required: true
       is_sensitive: true
-  - PROJECT_KEY: MA
+  - PROJECT_KEY:
     opts:
       title: Jira project prefix
+      description: |
+        Project prefix to search it. The first letters of all your tickets e.g. "PROJ" in "PROJ-1234" ticket
       is_required: true
   - VERSION_NAME:
     opts:
       title: Name of the new version
+      description: The new version name to create and apply to tickets
+      is_required: true
+  - VERSION_DESCRIPTION:
+    opts:
+      title: Description of the new version
       is_required: true
   - TICKET_LIST:
     opts:
-      title: The resolved ticket list
+      title: Ticket list
       description: |
-        All tickets found will be retrived and concatenate into a string delimited
+         All tickets to apply the new version tag
       is_required: true
   - TICKET_DELIMITER: "|"
     opts:
-      title: Ticket output_delimiter
-      description:  Delimiter to use when several tickets are found e.g. with `|` will ouptut TK-123|TK-124
+      title: Ticket delimiter
+      description:  Delimiter to use when several tickets are found e.g. with `|` in "TK-123|TK-124" list
       is_required: true

@@ -16,7 +16,7 @@ RESPONSE=$(curl -s -w "%{http_code}" -o $TEMP_RESPONSE -X POST \
     -H "Content-Type: application/json" \
     "https://$JIRA_DOMAIN/rest/api/3/version" \
     -d "{
-    \"description\": \"Version created automatically\",
+    \"description\": \"$VERSION_DESCRIPTION\",
     \"name\": \"$VERSION_NAME\",
     \"project\": \"$PROJECT_KEY\",
     \"released\": false

@@ -12,16 +12,9 @@ workflows:
   test:
     steps:
     - path::./:
-        title: Create and add Version
-        description: |-
-          The example input has a default value,
-          you can overwrite it if you want to, just like we did below,
-          but the step would use the default value specified in the `step.yml`
-          file if you would not specify another value.
+        title: Jira Create and add Version
         run_if: true
         inputs:
         - JIRA_DOMAIN: $JIRA_DOMAIN
         - JIRA_USER: $JIRA_USER
         - JIRA_TOKEN: $JIRA_TOKEN
-        - VERSION_NAME:
-        - TICKET_LIST:
