@@ -11,29 +11,38 @@ if [ -z "$IFS" ]; then
 fi
 
 # --- Create the version in Jira ---
-RESPONSE=$(curl -s -w "%{http_code}" -o $TEMP_RESPONSE -X POST \
-    -u "$JIRA_USER:$JIRA_TOKEN" \
-    -H "Content-Type: application/json" \
-    "https://$JIRA_DOMAIN/rest/api/3/version" \
-    -d "{
-    \"description\": \"$VERSION_DESCRIPTION\",
-    \"name\": \"$VERSION_NAME\",
-    \"project\": \"$PROJECT_KEY\",
-    \"released\": false
-    }")
+if [ "$FIELD" = "fixVersions" ]; then
+    RESPONSE=$(curl -s -w "%{http_code}" -o $TEMP_RESPONSE -X POST \
+        -u "$JIRA_USER:$JIRA_TOKEN" \
+        -H "Content-Type: application/json" \
+        "https://$JIRA_DOMAIN/rest/api/3/version" \
+        -d "{
+        \"description\": \"$VERSION_DESCRIPTION\",
+        \"name\": \"$VERSION_NAME\",
+        \"project\": \"$PROJECT_KEY\",
+        \"released\": false
+        }")
 
-if [ "$RESPONSE" -eq 201 ]; then
-    echo "| ✓ Version '$VERSION_NAME' successfully created in project '$PROJECT_KEY'."
-    echo "|"
-else
-    echo "| ⚠️  Failed to create version. HTTP code: $RESPONSE"
-    cat $TEMP_RESPONSE
-    echo "|"
-    echo "|"
+    if [ "$RESPONSE" -eq 201 ]; then
+        echo "| ✓ Version '$VERSION_NAME' successfully created in project '$PROJECT_KEY'."
+        echo "|"
+    else
+        echo "| ⚠️  Failed to create version. HTTP code: $RESPONSE"
+        cat $TEMP_RESPONSE
+        echo "|"
+        echo "|"
+    fi
 fi
 
 # Clean up
 rm -f $TEMP_RESPONSE
+
+if [ "$FIELD" = "fixVersions" ]; then
+    PAYLOAD="{ \"fields\": { \"fixVersions\": [ { \"name\": \"$VERSION_NAME\" } ] } }"
+else
+    PAYLOAD="{ \"fields\": { \"$FIELD\": \"$VERSION_NAME\" } }"
+fi
+
 
 # --- Update each issue with the new version ---
 echo "| Updating issues with version \"$VERSION_NAME\"..."
@@ -42,13 +51,7 @@ for ISSUE_KEY in "${ISSUE_KEYS[@]}"; do
     -u "$JIRA_USER:$JIRA_TOKEN" \
     -H "Content-Type: application/json" \
     "https://$JIRA_DOMAIN/rest/api/3/issue/$ISSUE_KEY" \
-    -d "{
-        \"fields\": {
-        \"fixVersions\": [
-            { \"name\": \"$VERSION_NAME\" }
-        ]
-        }
-    }")
+    -d "$PAYLOAD")
 
     if [ "$RESPONSE" == "204" ]; then
     echo "| ✓ $ISSUE_KEY updated successfully"

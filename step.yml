@@ -51,6 +51,11 @@ inputs:
       title: Name of the new version
       description: The new version name to create and apply to tickets
       is_required: true
+  - FIELD:
+    opts:
+      title: Name of the field
+      description: the field where to put the version value. Are supported text field or fixVersions field.
+      is_required: true
   - VERSION_DESCRIPTION:
     opts:
       title: Description of the new version
