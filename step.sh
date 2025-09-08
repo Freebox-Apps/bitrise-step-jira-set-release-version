@@ -43,22 +43,21 @@ else
     PAYLOAD="{ \"fields\": { \"$FIELD\": \"$VERSION_NAME\" } }"
 fi
 
-
 # --- Update each issue with the new version ---
 echo "| Updating issues with version \"$VERSION_NAME\"..."
 for ISSUE_KEY in "${ISSUE_KEYS[@]}"; do
     RESPONSE=$(curl -s -w "%{http_code}" -o $TEMP_RESPONSE -X PUT \
-    -u "$JIRA_USER:$JIRA_TOKEN" \
-    -H "Content-Type: application/json" \
-    "https://$JIRA_DOMAIN/rest/api/3/issue/$ISSUE_KEY" \
-    -d "$PAYLOAD")
+        -u "$JIRA_USER:$JIRA_TOKEN" \
+        -H "Content-Type: application/json" \
+        "https://$JIRA_DOMAIN/rest/api/3/issue/$ISSUE_KEY" \
+        -d "$PAYLOAD" || true)
 
     if [ "$RESPONSE" == "204" ]; then
-    echo "| ✓ $ISSUE_KEY updated successfully"
+        echo "| ✓ $ISSUE_KEY updated successfully"
     else
-    echo "| X $ISSUE_KEY update failed (HTTP code: $RESPONSE)"
-    cat $TEMP_RESPONSE
-    echo "|"
+        echo "| X $ISSUE_KEY update failed (HTTP code: $RESPONSE)"
+        cat $TEMP_RESPONSE || true
+        echo "|"
     fi
 
     # Clean up
